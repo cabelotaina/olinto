@@ -1,0 +1,51 @@
+{
+  "name": "Olinto",
+  "version": "0.1.0",
+  "description": "Linguagens Formais e Compiladores UFSC",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "build --mac --x64 ."
+  },
+  "author": "cabelotaina",
+  "license": "GPL-3.0",
+  "build": {
+    "appId": "io.github.cabelotaina.olinto",
+    "nwVersion": "v0.23.5",
+    "packed": true,
+    "targets": [
+      "zip",
+      "nsis7z"
+    ],
+    "strippedProperties": [
+      "build"
+    ],
+    "outputPattern": "${NAME} ${VERSION} ${PLATFORM} ${ARCH}",
+    "win": {
+      "productName": "Olinto's CFG",
+      "companyName": "blue bird",
+      "copyright": "copyleft",
+      "icon": "./assets/pd.ico"
+    },
+    "mac": {
+      "displayName": "Olinto's CFG",
+      "copyright": "copyleft",
+      "icon": "./assets/grammar.png",
+      "plistStrings": {
+        "CFBundleIdentifier": "io.github.cabelotaina.olinto.project.modified",
+        "CFBundleDocumentTypes": []
+      }
+    },
+    "nsis": {
+      "installDirectory": "$PROGRAMFILES\\${_COMPANYNAME}\\${_APPNAME}",
+      "diffUpdaters": true
+    }
+  },
+  "devDependencies": {
+    "nwjs-builder-phoenix": "^1.14.3",
+    "typescript": "^2.2.1"
+  },
+  "window": {
+    "icon": "./assets/pd.png"
+  }
+}

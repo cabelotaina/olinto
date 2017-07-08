@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GLC</title>
+  </head>
+  <body>
+    <h1>GLC</h1>
+    <div>
+      <p>
+        <input id="descricao" placeholder="Descricao">
+      </p>
+      <p>
+        <textarea id="gramatica" rows="4" cols="50">E->TE1 
+E1-> +TE1| &
+T -> FT1
+T1-> *FT1 |&
+F -> ( E ) | i</textarea>
+      </p>
+      <button onclick="main()">Adicionar</button>
+    </div>
+    <div>
+      <button onclick="first()">
+        first
+      </button>
+    </div>
+    <div>
+      <button onclick="follow()">
+        follow
+      </button>
+    </div>
+    <div>
+      <button onclick="first_nt()">
+        firstNT
+      </button>
+    </div>
+    <div>
+      <button onclick="factored()">
+        esta fatorada?
+      </button>
+    </div>
+    <div>
+      <button onclick="left_rec()">
+        Possui Rec. a Esquerda?
+      </button>
+    </div>
+    <div>
+      <button onclick="eh_ll1()">
+        LL(1)?
+      </button>
+    </div>
+    <div>
+      <button>
+        <<
+      </button>
+    </div>
+    <div>
+     <select>
+      <option value="volvo">Volvo</option>
+      <option value="saab">Saab</option>
+      <option value="mercedes">Mercedes</option>
+      <option value="audi">Audi</option>
+    </select> 
+    </div>
+    <div>
+    <input id="sentenca" />
+    <button>Analisar</button>
+    <p id="resultado_analise"></p>
+    </div>
+    <h3>
+    Resultados
+    </h3>
+    <p id="elivre"></p>
+    <p id="sem_ciclos"></p>
+    <p id="fertil"></p>
+    <p id="alcancaveis"></p>
+    <p id="sem_simbolos_inuteis"></p>
+    <p id="first"></p>
+    <p id="follow"></p>
+    <p id="firstNT"></p>
+    <p id="recursao_esquerda"></p>
+    <p id="fatorada"></p>
+    <p id="ll1"></p>
+    <p>
+      <table style="width:100%">
+        <tbody id="table"></tbody>
+      </table>
+    </p>
+    <script src="script.js"></script> 
+  </body>
+</html>

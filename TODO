@@ -1,0 +1,7 @@
+TODO
+
+tem que resolver o problema do id (posso usar regex para isso)
+mostrar as GLC propria e testar
+efetuar análise sintática (reconhecimento de sentenças) usando a técnica LL(1).
+editar GLC’s
+integrar com a interface
