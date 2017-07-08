@@ -1,3 +1,3 @@
-./node*
-./dist
+node*
+dist
 .DS*
