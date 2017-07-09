@@ -32,11 +32,11 @@
           <!-- exemplo -->
           <div class="col-md-3 footer-branding" align="justify">
             <h2>Exemplo: </h2>
-            <p>E->TE1 </p>
-            <p>E1-> +TE1|& </p>
-            <p>T -> FT11 </p>
-            <p>T1-> *FT1 |& </p>
-            <p>F -> ( E ) | id </p>
+            <h3>E->TE1 <br>
+            E1-> +TE1|& <br>
+            T -> FT11<br>
+            T1-> *FT1 |& <br>
+            F -> ( E ) | id </h3>
           </div>
           <!--Adicionar uma gramatica no sistema-->
           <div class="col-md-3 footer-branding">
@@ -46,11 +46,7 @@
                   <input id="descricao" style="color:black" placeholder="Descricao">
                 </p>
                 <!--p>Adicionar gramatica</p-->
-                <textarea id="gramatica" rows="4">E->TE1 
-  E1-> +TE1| &
-  T -> FT1
-  T1-> *FT1 |&
-  F -> ( E ) | id</textarea>
+                <textarea id="gramatica" rows="4"></textarea>
                   <button onclick="main()">
                   <i class="fa fa-plus" style="color:green" aria-hidden="true">Adicionar</i></button>
                 </div>
@@ -160,7 +156,7 @@
           
         </div>
         <div class="col-md-6 footer-branding" align="center">
-          <h2>Tabela Parsing LL(1)</h2>
+          <h2 id="title_table"></h2>
           <p>
             <table style="color:white;width:100%">
               <tbody id="table"></tbody>

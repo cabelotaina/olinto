@@ -485,6 +485,8 @@
                 && explode[k] !== "*"
                 && explode[k] !== "("
                 && explode[k] !== ")"
+                && explode[l] !== "-"
+                && explode[l] !== "/"
                 && k < explode.length -1){
               //console.log("indice: "+k);
               //console.log("NT en analise: "+explode[k+1]);
@@ -495,6 +497,8 @@
                      && explode[l] !== "*"
                      && explode[l] !== "("
                      && explode[l] !== ")"
+                     && explode[l] !== "-"
+                     && explode[l] !== "/"
                      && explode[l] !== "&"){
                   // first do proximo que vamos pegar
                   //console.log("NT Atual:"+explode[k])
@@ -503,6 +507,11 @@
                   var frt = this.first_result[explode[l]];
                   var epsilon = false;
                   for (var m in frt){
+                    console.log("Problemas");
+                    console.log(explode[k]);
+                    console.log(aux[explode[k]]);
+                    console.log(aux);
+                    console.log(frt[m]);
                     if (aux[explode[k]].indexOf(frt[m]) === -1 && frt[m] !== "&"){
                       aux[explode[k]].push(frt[m]);
                     }
@@ -520,6 +529,8 @@
                          || explode[l] === "*"
                          || explode[l] === "("
                          || explode[l] === ")")
+                         || explode[l] === "-"
+                         || explode[l] === "/"
                          && explode[l] !== "&"){
                     if (aux[explode[k]].indexOf(explode[l]) === -1){
                       aux[explode[k]].push(explode[l]);
@@ -586,8 +597,10 @@
               break;
             }
             if (explode[k] === explode[k].toUpperCase() && explode[k] !== "&"){
-              //console.log(explode[k]);
-              aux[i].push(explode[k])
+              if (aux[i].indexOf(explode[k]) === -1){
+                aux[i].push(explode[k]);
+              }
+              
               if (this.first_result[explode[k]].indexOf("&") === -1){
                 break;
               }
@@ -1371,7 +1384,7 @@
 
         var globalCounter = 0;
         var table = document.getElementById('table');
-
+        this.title_table.innerHTML = "Tabela Parsing LL(1)";
         var aux = "<tr><th>Estados</th>";
         for (var i in cfg.alphabet){
           aux += "<th>"+cfg.alphabet[i]+"</th>"; 

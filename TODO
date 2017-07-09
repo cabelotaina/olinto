@@ -1,7 +1,6 @@
 TODO
 
 ver por que o first, follow e follow NT tem mais <p>'s do que o normal
-presico desfazer a transformacao de S' para Ω
 remover todos os comentarios e documentar
 (// |//)?console.log\([\"?&0-9a-zA-Z._\[\]+]*\"?\);
 
@@ -9,7 +8,10 @@ colocar as producoes usadas junto do parse
 testar as conversoes de GLC (remover eps, ciclos e simbolos inuteis)
 testar copiar e colar do pdf
 
-analizar se todos os elementos da palavra pertencem ao alfabeto
+analizar se todos os elementos da palavra pertencem ao alfabeto e emitir um erro caso contrario
+nao deixar que o usuario envie a gramatica sem colocar um titulo
 editar GLC’s (permitir salvar uma transformada ou jogar na caixa de selecao)
 
 esta repetindo no first NT (colocando um mesmo NT mais de uma vez indexOf() === -1)
+
+se existe uma gramatica com o mesmo nome nao colocar ela no banco
