@@ -46,6 +46,13 @@
     "typescript": "^2.2.1"
   },
   "window": {
-    "icon": "./assets/pd.png"
+    "icon": "./assets/grammar.png",
+    "title": "Scary Chicken",
+    "toolbar": false,
+    "width": 1350,
+    "height": 750,
+    "frame": true,
+    "position": "mouse",
+    "resizable": true
   }
 }

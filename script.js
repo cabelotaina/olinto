@@ -649,10 +649,10 @@
         }
       }
       if (status){
-        this.is_factored_result = "GLC nao esta fatorada";
+        this.is_factored_result = "NÃO!";
       }
       else {
-         this.is_factored_result = "GLC esta fatorada!";
+         this.is_factored_result = "SIM";
       }
       
       this.is_factored_status = status;
@@ -681,10 +681,10 @@
       console.log(this.first_nt_result);
       
       if (status){
-        this.left_rec = "GLC possui recursao a esquerda";
+        this.left_rec = "SIM";
       }
       else{
-        this.left_rec = "GLC nao possui recursao a esquerda!";
+        this.left_rec = "NÃO!";
       }
       
       this.left_rec_status = status;
@@ -907,12 +907,29 @@
   }
 
   var cfg = new CFG();
+
   var db = openDatabase('olinto', '1.0', 'CFG db', 2 * 1024 * 1024);
+
+  if(!db){
+    alert("Problemas ao criar o banco de dados");
+  }
   
   // criando a tabela base do sistema
   db.transaction(function (tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS grammar (id unique, description, grammar)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS grammar (id INTEGER PRIMARY KEY ASC, description VARCHAR(255) NOT NULL, grammar VARCHAR(255) NOT NULL)');
   });
+
+  // Query out the data
+  db.transaction(function (tx) {
+    tx.executeSql('SELECT * FROM grammar', [], function (tx, results) {
+      console.log(results);
+      var len = results.rows.length, i;
+      for (i = 0; i < len; i++) {
+        this.gramaticas.innerHTML += '<option value="'+results.rows[i].id+'">'+results.rows[i].description+'</option>';
+      }
+    });
+  });
+
 
   var greek_upper = {};
   greek_upper["\u0393"] = null;//Γ
@@ -971,9 +988,50 @@
     }
   }
 
+  window.analize_grammar = function(){
+
+    var e = this.gramaticas;
+    var id = e.options[e.selectedIndex];
+    if (id){
+      //console.log(id.value);
+
+      id = id.value;
+      //Query out the data
+      db.transaction(function (tx) {
+        tx.executeSql('SELECT * FROM grammar where id='+id, [], function (tx, results) {
+          console.log(results);
+          var len = results.rows.length, i;
+          for (i = 0; i < len; i++) {
+            this.gramatica.innerHTML = results.rows[i].grammar;
+            this.descricao.value = results.rows[i].description;
+            console.log(results.rows[i].description);
+          }
+        });
+      });
+
+    }
+    
+  }
+
+  window.remove_grammar = function(){
+
+      var id = document.getElementById("gramaticas");
+      var value = id.value;
+      id.remove(id.selectedIndex);
+    if (id){
+      //Query out the data
+      db.transaction(function (tx) {
+        tx.executeSql('delete from grammar where id='+value);
+      });
+
+
+    }
+  }
+
   refresh = function(){
     if (cfg){
       delete cfg;
+      cfg = {};
       cfg = new CFG();
     }
 
@@ -992,7 +1050,21 @@
     var grammar = document.getElementById("gramatica").value;
     grammar = grammar.replace(/ /g, "");
 
+
+    // armanenamento description e grammar
+    var errorCB;
+    var description = this.descricao.value;
+    db.transaction(function (tx) {
+      tx.executeSql(
+        'INSERT INTO grammar (description, grammar) VALUES (?,?)',
+        [description, grammar],
+        function(tx, results) { this.gramaticas.innerHTML += '<option value="'+results.insertId+'">'+description+'</option>'; },
+        errorCB
+      );
+    });
+
     var aux2 = grammar.split("\n");
+
     for (var i in aux2){
       var two = aux2[i].split("->");
       //console.log(two);
@@ -1028,20 +1100,7 @@
       cfg.add_prod(two[0], two[1]);
     }
 
-    // armanenamento description e grammar
-    // var errorCB;
-    // var description = this.descricao.value;
-    // db.transaction(function (tx) {
-    //   tx.executeSql(
-    //     'INSERT INTO locations (description, grammar) VALUES (?,?)',
-    //     [description, grammar],
-    //     function(tx, results) { alert('ID Retornado: ' + results.insertId); },
-    //     errorCB
-    //   );
-    // });
 
-    // this.gramaticass.innerHTML += '<option value="'+description+'">'+description+'</option>';
-    
   }
   
   //cfg.remove_eps_productions();
@@ -1229,7 +1288,7 @@
   window.first = function(){
   
     cfg.first();
-    var output = "<h3>First<h3>";
+    var output = "<h3>First</h3>";
     for (var i in cfg.first_result){
       output = "<p>"+output+i+": "+cfg.first_result[i].join()+"</p>";
     }
@@ -1241,7 +1300,7 @@
   window.follow = function(){
   
     cfg.follow();
-    var output = "<h3>Follow<h3>";
+    var output = "<h3>Follow</h3>";
     for (var i in cfg.follow_result){
       output = "<p>"+output+i+": "+cfg.follow_result[i].join()+"</p>";
     }
@@ -1253,7 +1312,7 @@
   //cfg.first_nt();
   window.first_nt = function(){
     cfg.first_nt();
-    var output = "<h3>FirstNT<h3>";
+    var output = "<h3>FirstNT</h3>";
     for (var i in cfg.first_nt_result){
       output = "<p>"+output+i+": "+cfg.first_nt_result[i].join()+"</p>";
     }
@@ -1264,19 +1323,19 @@
   //cfg.is_factored();
   window.factored = function(){
     cfg.is_factored();
-    document.getElementById('fatorada').innerHTML = "<h3>Fatorada<h3><p>"+cfg.is_factored_result+"</p>";
+    document.getElementById('response').innerHTML = "<h3>G esta fatorada? "+cfg.is_factored_result+"</h3>";
   }
   
   //cfg.left_recursion();
   window.left_rec = function(){
     cfg.left_recursion();
-    document.getElementById('recursao_esquerda').innerHTML = "<h3>Rec. a Esquerda<h3><p>"+cfg.left_rec+"</p>";
+    document.getElementById('response').innerHTML = "<h3>G possui Rec. Esq? "+cfg.left_rec+"</h3>";
   }
   //cfg.ll1();
   window.eh_ll1 = function(){
     this.ff_intersection_result;
     if (!cfg.is_factored()  && !cfg.left_recursion() && !cfg.ff_intersection()){
-       document.getElementById('ll1').innerHTML = "<h3>LL(1)<h3><p>OK LL(1)</p>";
+       document.getElementById('response').innerHTML = "<h3>LL(1)? SIM</h3>";
        // constroi a tabela de parsing pois ela eh LL(1)
        cfg.ll1();
        console.log(cfg.alphabet);
@@ -1305,6 +1364,6 @@
         }
 
      } else {
-       document.getElementById('ll1').innerHTML = "<h3>LL(1)<h3><p>NOT OK LL(1)</p>";
+       document.getElementById('response').innerHTML = "<h3>LL(1)? NÃO!</h3>";
      }
   }

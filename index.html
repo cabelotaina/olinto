@@ -1,117 +1,235 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html class="no-js" lang="en-US">
+
   <head>
-    <title>GLC</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Linguagens Formais e Compiladore | Maurílio</title>
+    <meta name="description" content="Trabalho final da linguagens Formais e compiladores">
+    <meta name="keywords" content="Linguagens Formais e compiladores" />
+    <meta name="author" content="Maurílio Atila Carvalho de Santana" />
+    
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   </head>
   <body>
-    <h1>GLC</h1>
-    <div>
-      <p>
-        <input id="descricao" placeholder="Descricao">
-      </p>
-      <p>
-        <textarea id="gramatica" rows="4" cols="50">E->TE1 
-E1-> +TE1| &
-T -> FT1
-T1-> *FT1 |&
-F -> ( E ) | id</textarea>
-      </p>
-      <button onclick="main()">Adicionar</button>
+    <section class="get-started has-padding text-center">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 wp4">
+          <img align="center" class="footer-branding-logo"  src="img/logo_UFSC.png" width="60" "><br>
+            <h3><strong>Universidade Federal de Santa Catarina</strong></h3>
+            <h2>Linguagens Formais e Compiladores</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="has-padding footer-bg">
+      <div class="container">
+
+        <div class="row">
+          <!-- exemplo -->
+          <div class="col-md-3 footer-branding" align="justify">
+            <h2>Exemplo: </h2>
+            <p>E->TE1 </p>
+            <p>E1-> +TE1|& </p>
+            <p>T -> FT11 </p>
+            <p>T1-> *FT1 |& </p>
+            <p>F -> ( E ) | id </p>
+          </div>
+          <!--Adicionar uma gramatica no sistema-->
+          <div class="col-md-3 footer-branding">
+              <div class="field">
+                <div class="col-md-5 footer-branding">
+                <p>
+                  <input id="descricao" style="color:black" placeholder="Descricao">
+                </p>
+                <!--p>Adicionar gramatica</p-->
+                <textarea id="gramatica" rows="4">E->TE1 
+  E1-> +TE1| &
+  T -> FT1
+  T1-> *FT1 |&
+  F -> ( E ) | id</textarea>
+                  <button onclick="main()">
+                  <i class="fa fa-plus" style="color:green" aria-hidden="true">Adicionar</i></button>
+                </div>
+              </div>
+          </div>
+
+          <!--adicionar a gramatica da lista no text area-->
+          <div class="col-md-3 footer-branding">
+            <center>
+            <button onclick="analize_grammar()">
+              <i class="fa fa-arrow-left fa-3x" aria-hidden="true"></i>
+            </button>
+            </center>
+          </div>
+ 
+          <!-- lista de gramaticas -->
+          <div class="col-md-3 footer-branding">
+              <div class="field">
+                <div class="col-md-5 footer-branding">
+                  <p>Lista de Gramaticas</p>
+                  <select id ="gramaticas" multiple>
+                  </select>
+                  <p>
+                    <button onclick="remove_grammar()">
+                    <i class="fa fa-trash" style="color:red" aria-hidden="true">
+                    </i>
+                    </button>
+                  </p>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="navbar-search pull-left">
+          <input type="text" class="search-query" 
+          id="sentence"
+          placeholder=" Insira uma sentenca">
+          <button type="submit" onclick="analize() 
+          class="btn-success">Analizar</button>
+          <h3 id="result_sentence"></h3>
+          </div>
+          <!--precisa retirar isso que esta acima e trocar pelo que esta abaixo-->
+          <div class="col-md-1 footer-branding">
+            <div class="alert alert-success" role="alert">
+              <strong>Aceita</strong>
+            </div>
+          </div>
+          <div class="col-md-1 footer-branding">
+            <div class="alert alert-danger" role="alert">
+              <strong>Rejeita</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 footer-nav"> 
+        </div>
+
+
+      </div>
+
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button  onclick="remove_eps_productions()" class="btn secondary-white">E-livre</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="remove_simple_productions()" class="btn secondary-white">Sem ciclos</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="remove_infertiles_symbols()" class="btn secondary-white">Remover Infertil</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="remove_unreachable_symbols()" class="btn secondary-white">Remover Inalcançaveis</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="all_actions()" class="btn secondary-white">Tranformar em Propria</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="first()" class="btn secondary-white">First</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="follow()" class="btn secondary-white">Follow</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="first_nt()" class="btn secondary-white">First NT</button></h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="factored()" class="btn secondary-white">Esta Fatorada?</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="left_rec()" class="btn secondary-white">Possui Rec. a Esquerda?</button></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><button onclick="eh_ll1()" class="btn secondary-white">LL(1)?</button></h2>
+        </div>
+      </div>
+      <div class="col-md-12 footer-nav">
+          
+        </div>
+      <div class="row">
+        <div id="response" class="col-md-6 footer-branding" align="justify">
+          
+        </div>
+        <div class="col-md-6 footer-branding" align="center">
+          <h2>Tabela Parsing LL(1)</h2>
+          <p>
+            <table style="color:white;width:100%">
+              <tbody id="table"></tbody>
+            </table>
+          </p>
+        </div>
+      </div>
+
     </div>
-    <input id="sentence"/>
-    <button onclick="analize()">Analisar</button>
-    <h3 id="result_sentence"></h3>
+
     <div>
-      <button onclick="first()">
-        first
-      </button>
+      <p id="resultado_analise"></p>
     </div>
-    <div>
-      <button onclick="follow()">
-        follow
-      </button>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="elivre"></p></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="sem_ciclos"></p></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="ferteis"></p></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="alcancaveis"></p></h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="propria"></p></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="first"></p></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="follow"></p></h2>
+        </div>
+        <div class="col-md-3 footer-branding" align="center">
+          <h2><p id="firstNT"></p></h2>
+        </div>
+      </div>
+      </div>
     </div>
-    <div>
-      <button onclick="first_nt()">
-        firstNT
-      </button>
-    </div>
-    <div>
-      <button onclick="factored()">
-        esta fatorada?
-      </button>
-    </div>
-    <div>
-      <button onclick="left_rec()">
-        Possui Rec. a Esquerda?
-      </button>
-    </div>
-    <div>
-      <button onclick="eh_ll1()">
-        LL(1)?
-      </button>
-    </div>
-    <div>
-      <button onclick="remove_eps_productions()">
-        Remover Epsilon Transicoes
-      </button>
-    </div>
-    <div>
-      <button onclick="remove_simple_productions()">
-        Remover ciclos
-      </button>
-    </div>
-    <div>
-      <button onclick="remove_infertiles_symbols()">
-        Remover simbolos Inferteis
-      </button>
-    </div>
-    <div>
-      <button onclick="remove_unreachable_symbols()">
-        Remover Simbolos Inalcancaveis
-      </button>
-    </div>
-    <div>
-      <button onclick="all_actions()">
-        Tranformar em Propria
-      </button>
-    </div>
-    <div>
-      <button>
-        <<
-      </button>
-    </div>
-    <div>
-     <select id ="gramaticas" multiple>
-      <option value="volvo">Volvo</option>
-      <!--option value="saab">Saab</option>
-      <option value="mercedes">Mercedes</option>
-      <option value="audi">Audi</option-->
-    </select> 
-    </div>
-    <div>
-    <p id="resultado_analise"></p>
-    </div>
-    <h3>
-    Resultados
-    </h3>
-    <p id="elivre"></p>
-    <p id="sem_ciclos"></p>
-    <p id="ferteis"></p>
-    <p id="alcancaveis"></p>
-    <p id="sem_simbolos_inuteis"></p>
-    <p id="propria"></p>
-    <p id="first"></p>
-    <p id="follow"></p>
-    <p id="firstNT"></p>
-    <p id="recursao_esquerda"></p>
+    <!--p id="recursao_esquerda"></p>
     <p id="fatorada"></p>
-    <p id="ll1"></p>
-    <p>
-      <table style="width:100%">
-        <tbody id="table"></tbody>
-      </table>
-    </p>
-    <script src="script.js"></script> 
+    <p id="ll1"></p-->
+
+    <div class="col-md-12 footer-nav">
+      <ul class="footer-secondary-nav">
+        <p> &copy; 2017  Linguagens Formais e Compiladores -  <font color="B6B1B0">CCO/UFSC - Maurílio Atila Carvalho de Santana</font></p>
+      </ul>
+    </div>
+    </footer>
+    <script src="script.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+    <script src="http://vjs.zencdn.net/5.4.6/video.min.js"></script>
+    
+    <script>
+    window.jQuery || document.write('<script src="js/min/jquery-1.11.2.min.js"><\/script>')
+    </script>
+    <script src="js/min/bootstrap.min.js"></script>
+    <script src="js/min/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+    <script src="js/min/retina.min.js"></script>
+    <script src="js/min/jquery.waypoints.min.js"></script>
+    <script src="js/min/flickity.pkgd.min.js"></script>
+    <script src="js/min/scripts-min.js"></script>
   </body>
 </html>

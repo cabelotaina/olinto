@@ -1,10 +1,5 @@
 TODO
 
-remover simbolos inuteis
-
-editar GLC’s (salvar no banco, adicionar na lista, carregar todas as que estao no banco, permitir selecionar e jogar na caixa de edicao, permitir salvar uma transformada ou jogar na caixa de selecao)
-
-
 integrar com a interface
 colocar as producoes usadas junto do parse
 
@@ -14,3 +9,6 @@ presico desfazer a transformacao de S' para Ω
 remover todos os comentarios e documentar
 testar as conversoes de GLC (remover eps, ciclos e simbolos inuteis)
 testar copiar e colar do pdf
+
+analizar se todos os elementos da palavra pertencem ao alfabeto
+editar GLC’s (permitir salvar uma transformada ou jogar na caixa de selecao)
