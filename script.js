@@ -1114,7 +1114,7 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.elivre.innerHTML = "<h3>Gramatica Sem Epsilon Producoes</h3>"+grammar;
+    this.elivre.innerHTML = "<h3>Gramatica Sem Epsilon Producoes</h3>"+replace_greek(grammar);
   }
 
   //cfg.remove_simple_productions();
@@ -1128,7 +1128,7 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.sem_ciclos.innerHTML = "<h3>Gramatica Sem Ciclos</h3>"+grammar;
+    this.sem_ciclos.innerHTML = "<h3>Gramatica Sem Ciclos</h3>"+replace_greek(grammar);
   }
 
   //cfg.remove_infertiles_symbols();
@@ -1141,7 +1141,7 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.ferteis.innerHTML = "<h3>Gramatica Ferteis</h3>"+grammar;
+    this.ferteis.innerHTML = "<h3>Gramatica Ferteis</h3>"+replace_greek(grammar);
   }
 
   //cfg.remove_unreachable_symbols();
@@ -1154,7 +1154,7 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.alcancaveis.innerHTML = "<h3>Gramatica Alcancaveis</h3>"+grammar;
+    this.alcancaveis.innerHTML = "<h3>Gramatica Alcancaveis</h3>"+replace_greek(grammar);
   }
 
   // tranformar em propria
@@ -1171,7 +1171,7 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.propria.innerHTML = "<h3>Gramatica Propria</h3>"+grammar;
+    this.propria.innerHTML = "<h3>Gramatica Propria</h3>"+replace_greek(grammar);
   }
 
   // sentence analizer
@@ -1236,7 +1236,7 @@
             }
           }
           console.log("Esperava-se: "+array);
-          this.result_sentence.innerHTML = "Esperava-se: "+array;
+          this.result_sentence.innerHTML = "Esperava-se: "+replace_greek(array.toString());
           this.ll1_no.style.display = "";
           this.ll1_yes.style.display = "none";
           break;
@@ -1293,11 +1293,12 @@
   
     cfg.first();
     var output = "<h3>First</h3>";
+    console.log(cfg.first_result)
     for (var i in cfg.first_result){
       output = "<p>"+output+i+": "+cfg.first_result[i].join()+"</p>";
     }
     
-    document.getElementById('first').innerHTML = output;
+    document.getElementById('first').innerHTML = replace_greek(output);
   
   }
   
@@ -1309,7 +1310,7 @@
       output = "<p>"+output+i+": "+cfg.follow_result[i].join()+"</p>";
     }
     
-    document.getElementById('follow').innerHTML = output;
+    document.getElementById('follow').innerHTML = replace_greek(output);
   
   }
 
@@ -1321,7 +1322,29 @@
       output = "<p>"+output+i+": "+cfg.first_nt_result[i].join()+"</p>";
     }
     
-    document.getElementById('firstNT').innerHTML = output;
+    document.getElementById('firstNT').innerHTML = replace_greek(output);
+  }
+
+  replace_greek = function(output){
+    for (var i in greek_upper){
+      if (this.greek_upper[i] !== null){
+        var choice = this.greek_upper[i];
+        var re = new RegExp(i,"g");
+        output = output.replace(re, choice);
+      }
+    }
+    for (var i in greek_lower){
+      if (this.greek_lower[i] !== null){
+        var choice = this.greek_lower[i];
+        var re = new RegExp(i,"g");
+        output = output.replace(re, choice);
+      }
+    }
+    var omega = "\u03A9";
+    var re = new RegExp(omega,"g");
+    output = output.replace(re,"S'");
+
+    return output;
   }
   
   //cfg.is_factored();
@@ -1354,7 +1377,6 @@
           aux += "<th>"+cfg.alphabet[i]+"</th>"; 
         }
         aux += "</tr>";
-        table.innerHTML = aux;
 
         for (var i in cfg.ll1_result){
           if (i !== "#"){
@@ -1362,8 +1384,10 @@
             for (var j in cfg.ll1_result[i]) {
               tr += "<th>"+cfg.ll1_result[i][j]+"</th>";
             }
-            table.innerHTML += "<tr><th>"+i+"</th>"+tr+"</tr>";
+            aux += "<tr><th>"+i+"</th>"+tr+"</tr>";
           } 
+
+          table.innerHTML = replace_greek(aux);
          
         }
 
