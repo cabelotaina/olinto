@@ -94,8 +94,9 @@
       // Se S pertence a Ne colocar a producao S' -> S | &
 
       if (this.ne.indexOf(this.start) != -1){
-        this.start = "S'";
-        this.prod["S'"] = ["S","&"];
+        //greek_upper["\u03A9"] = null;//Ω
+        this.start = "Ω";
+        this.prod["Ω"] = [this.start,"&"];
       }
       console.log("eliminacao de epsilon transicoes")
       console.log(this.prod);
@@ -109,17 +110,17 @@
      for (var i in [1,2,3]){
        var nx = {};
        for (var p in this.prod){
-         if(!nx[p] && p != "S'")
+         if(!nx[p] && p != "Ω")
            nx[p] = [p];
 
          for (var s in this.prod[p]){
-           if (this.prod[p][s].length === 1 && p != "S'"
+           if (this.prod[p][s].length === 1 && p != "Ω"
                && this.prod[p][s] == this.prod[p][s].toUpperCase()){
                nx[p].push(this.prod[p][s]);
            }
          }
 
-         if (p != "S'"){
+         if (p != "Ω"){
            for (var i in nx[p]){
              if (nx[p][i] !== p && nx[p][i] !== undefined){
                 //console.log("Quem esta sendo avaliado: "+p);
@@ -171,7 +172,7 @@
       // Copiar producoes dos terminais em NA
 
       for (var p in this.prod){
-        if (p !== "S'"){
+        if (p !== "Ω"){
           //console.log(this.prod[p])
           //console.log(nx[p])
           //console.log(this.nx[p])
@@ -917,7 +918,6 @@
   greek_upper["\u03A6"] = null;//Φ
   greek_upper["\u03A7"] = null;//Χ
   greek_upper["\u03A8"] = null;//Ψ
-  greek_upper["\u03A9"] = null;//Ω
   greek_upper["\u03B1"] = null;//α
   greek_upper["\u03B2"] = null;//β
   greek_upper["\u03B3"] = null;//γ
@@ -1034,6 +1034,14 @@
   }
   
   //cfg.remove_eps_productions();
+
+  window.remove_eps_productions = function(){
+    this.main();
+    cfg.remove_eps_productions();
+
+    console.log(cfg.prod);
+  }
+
   //cfg.remove_simple_productions();
   //cfg.remove_infertiles_symbols();
   //cfg.remove_unreachable_symbols();
