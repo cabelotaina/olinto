@@ -922,6 +922,15 @@
   greek_upper["\u03B2"] = null;//β
   greek_upper["\u03B3"] = null;//γ
 
+  var next_greek_upper = function(){
+    for (var i in greek_upper){
+      if (!greek_upper[i]){
+        return i;
+      }
+    }
+  }
+
+
   var greek_lower = {};
   greek_lower["\u03B9"] = null; //ι
   greek_lower["\u03BA"] = null; //κ
@@ -942,19 +951,57 @@
   greek_lower["\u03C8"] = null; //ψ
   greek_lower["\u03C9"] = null; //ω
   
-  window.main = function(){
+
+  var next_greek_lower = function(){
+    for (var i in greek_lower){
+      if (!greek_lower[i]){
+        return i;
+      }
+    }
+  }
+
+  refresh = function(){
     if (cfg){
       delete cfg;
       cfg = new CFG();
     }
+
+    for (var i in greek_lower){
+      greek_lower[i] = null;
+    }
+
+    for (var i in greek_upper){
+      greek_upper[i] = null;
+    }
+  }
+
+  window.main = function(){
+    refresh();
+
     var grammar = document.getElementById("gramatica").value;
     grammar = grammar.replace(/ /g, "");
+
+    var aux2 = grammar.split("\n");
+    for (var i in aux2){
+      var two = aux2[i].split("->");
+      //console.log(two);
+      var productions = two[1].split("|");
+      for (var j in productions){
+        if (productions[j] === productions[j].toLowerCase() && productions[j] !== "&"){
+          //console.log(productions[j]);
+          var choice = next_greek_lower();
+          var re = new RegExp(productions[j],"g");
+          grammar = grammar.replace(re, choice);
+          greek_lower[choice] = productions[j];
+        }
+      }
+    }
+
     var aux = grammar.split("\n");
-    
     for (var i in aux){
       var two = aux[i].split("->");
       if (two[0].length > 1){
-        var choice = next();
+        var choice = next_greek_upper();
         var re = new RegExp(two[0],"g");
         grammar = grammar.replace(re, choice);
         greek_upper[choice] = two[0];
@@ -993,12 +1040,30 @@
 
   window.analize = function(){
     console.log("Analization");
+    this.main();
 
+    console.log("greek_lower:");
+    console.log(this.greek_lower);
     var sentence = this.sentence.value;
+    for (var j in this.greek_lower){
+      console.log(this.greek_lower[j]);
+      if (this.greek_lower[j] !== null){
+        console.log("possui substring");
+        console.log(sentence.indexOf(this.greek_lower[j]) !== -1);
+        if (sentence.indexOf(this.greek_lower[j]) !== -1){
+
+          console.log(j);
+          var choice = j;
+          var re = new RegExp(this.greek_lower[j],"g");
+          console.log(this.greek_lower[j]);
+          sentence = sentence.replace(re, choice);
+        }
+      }
+    }
+    console.log("Sentenca em analize: "+sentence);
     var analize = sentence.split("");
     analize.push("$");
     // depois tirar isso e deixar o botao desabilitado ate que o usuario clique em criar ll1
-    this.main();
     cfg.ll1();
     var stack = ["$"];
     stack.push(cfg.start);
@@ -1034,6 +1099,7 @@
             }
           }
           console.log("Esperava-se: "+array);
+          this.result_sentence.innerHTML = "Esperava-se: "+array;
           break;
         }
         productions.push(prod_number);
@@ -1070,7 +1136,7 @@
       console.log(stack);
       if(stack.toString() === "$" && analize.toString() === "$"){
         console.log("Sentenca Aceita!")
-        this.result_sentence.innerHTML = "Sentenca Aceita!";
+        this.result_sentence.innerHTML = "Sentenca Aceita! Parse: "+productions;
         break;
       }
       counter++
@@ -1078,6 +1144,7 @@
     console.log("Pilha: "+stack);
     console.log("Entrada: "+analize);
     console.log("parse: "+productions);
+    this.parse = productions;
 
   }
   
@@ -1162,14 +1229,6 @@
      } else {
        document.getElementById('ll1').innerHTML = "<h3>LL(1)<h3><p>NOT OK LL(1)</p>";
      }
-  }
-  
-  var next = function(){
-    for (var i in greek_upper){
-      if (!greek_upper[i]){
-        return i;
-      }
-    }
   }
 
 
