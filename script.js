@@ -1306,12 +1306,12 @@
   
     cfg.first();
     var output = "<h3>First</h3>";
-    console.log(cfg.first_result)
     for (var i in cfg.first_result){
-      output = "<p>"+output+i+": "+cfg.first_result[i].join()+"</p>";
+      output += "<p>"+i+": "+cfg.first_result[i].join()+"</p>";
+      console.log(output);
     }
     
-    document.getElementById('first').innerHTML = replace_greek(output);
+    this.first_html.innerHTML = replace_greek(output);
   
   }
   
@@ -1320,10 +1320,10 @@
     cfg.follow();
     var output = "<h3>Follow</h3>";
     for (var i in cfg.follow_result){
-      output = "<p>"+output+i+": "+cfg.follow_result[i].join()+"</p>";
+      output += "<p>"+i+": "+cfg.follow_result[i].join()+"</p>";
     }
     
-    document.getElementById('follow').innerHTML = replace_greek(output);
+    this.follow_html.innerHTML = replace_greek(output);
   
   }
 
@@ -1332,10 +1332,10 @@
     cfg.first_nt();
     var output = "<h3>FirstNT</h3>";
     for (var i in cfg.first_nt_result){
-      output = "<p>"+output+i+": "+cfg.first_nt_result[i].join()+"</p>";
+      output += "<p>"+i+": "+cfg.first_nt_result[i].join()+"</p>";
     }
     
-    document.getElementById('firstNT').innerHTML = replace_greek(output);
+    this.firstNT.innerHTML = replace_greek(output);
   }
 
   replace_greek = function(output){
@@ -1363,19 +1363,19 @@
   //cfg.is_factored();
   window.factored = function(){
     cfg.is_factored();
-    document.getElementById('response').innerHTML = "<h3>G esta fatorada? "+cfg.is_factored_result+"</h3>";
+    this.response.innerHTML = "<h3>G esta fatorada? "+cfg.is_factored_result+"</h3>";
   }
   
   //cfg.left_recursion();
   window.left_rec = function(){
     cfg.left_recursion();
-    document.getElementById('response').innerHTML = "<h3>G possui Rec. Esq? "+cfg.left_rec+"</h3>";
+    this.response.innerHTML = "<h3>G possui Rec. Esq? "+cfg.left_rec+"</h3>";
   }
   //cfg.ll1();
   window.eh_ll1 = function(){
     this.ff_intersection_result;
     if (!cfg.is_factored()  && !cfg.left_recursion() && !cfg.ff_intersection()){
-       document.getElementById('response').innerHTML = "<h3>LL(1)? SIM</h3>";
+       this.response.innerHTML = "<h3>LL(1)? SIM</h3>";
        // constroi a tabela de parsing pois ela eh LL(1)
        cfg.ll1();
        console.log(cfg.alphabet);
@@ -1405,6 +1405,6 @@
         }
 
      } else {
-       document.getElementById('response').innerHTML = "<h3>LL(1)? NÃO!</h3>";
+       this.response.innerHTML = "<h3>LL(1)? NÃO!</h3>";
      }
   }
