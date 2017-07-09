@@ -18,6 +18,9 @@ F -> ( E ) | i</textarea>
       </p>
       <button onclick="main()">Adicionar</button>
     </div>
+    <input id="sentence" value="i+i+i" />
+    <button onclick="analize()">Analisar</button>
+    <h3 id="result_sentence"></h3>
     <div>
       <button onclick="first()">
         first
@@ -54,16 +57,14 @@ F -> ( E ) | i</textarea>
       </button>
     </div>
     <div>
-     <select>
+     <select id ="gramaticas" multiple>
       <option value="volvo">Volvo</option>
-      <option value="saab">Saab</option>
+      <!--option value="saab">Saab</option>
       <option value="mercedes">Mercedes</option>
-      <option value="audi">Audi</option>
+      <option value="audi">Audi</option-->
     </select> 
     </div>
     <div>
-    <input id="sentenca" />
-    <button>Analisar</button>
     <p id="resultado_analise"></p>
     </div>
     <h3>

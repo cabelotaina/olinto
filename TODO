@@ -1,7 +1,10 @@
 TODO
 
-tem que resolver o problema do id (posso usar regex para isso)
+trocar id por letra grega minuscula
+uma vez que usou a letra grega se apertar novamente para inserir uma nova gramatica poder dar refresh na tabela de letras gregas se nao elas acabam
 mostrar as GLC propria e testar
-efetuar análise sintática (reconhecimento de sentenças) usando a técnica LL(1).
-editar GLC’s
+editar GLC’s (salvar no banco, adicionar na lista, carregar todas as que estao no banco, permitir selecionar e jogar na caixa de edicao, permitir salvar uma transformada ou jogar na caixa de selecao)
 integrar com a interface
+remover o ultimo objeto criado e criar um novo
+mostrar o parse e se possivel as producoes abaixo ou ao lado
+fazer com que o parsing pare no primeiro erro e mostre o motivo do erro

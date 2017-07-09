@@ -895,8 +895,13 @@
   }
 
   var cfg = new CFG();
+  var db = openDatabase('olinto', '1.0', 'CFG db', 2 * 1024 * 1024);
   
-  
+  // criando a tabela base do sistema
+  db.transaction(function (tx) {
+    tx.executeSql('CREATE TABLE IF NOT EXISTS grammar (id unique, description, grammar)');
+  });
+
   var greek_upper = {};
   greek_upper["\u0393"] = null;//Γ
   greek_upper["\u0394"] = null;//Δ
@@ -916,13 +921,35 @@
   greek_upper["\u03B1"] = null;//α
   greek_upper["\u03B2"] = null;//β
   greek_upper["\u03B3"] = null;//γ
+
+  var greek_lower = {};
+  greek_lower["\u03B9"] = null; //ι
+  greek_lower["\u03BA"] = null; //κ
+  greek_lower["\u03BB"] = null; //λ
+  greek_lower["\u03BC"] = null; //μ
+  greek_lower["\u03BD"] = null; //ν
+  greek_lower["\u03BE"] = null; //ξ
+  greek_lower["\u03BF"] = null; //ο
+  greek_lower["\u03C0"] = null; //π
+  greek_lower["\u03D6"] = null; //ϖ
+  greek_lower["\u03C1"] = null; //ρ
+  greek_lower["\u03C2"] = null; //ς
+  greek_lower["\u03C3"] = null; //σ
+  greek_lower["\u03C4"] = null; //τ
+  greek_lower["\u03C5"] = null; //υ
+  greek_lower["\u03C6"] = null; //φ
+  greek_lower["\u03C7"] = null; //χ
+  greek_lower["\u03C8"] = null; //ψ
+  greek_lower["\u03C9"] = null; //ω
   
   window.main = function(){
+    if (cfg){
+      delete cfg;
+      cfg = new CFG();
+    }
     var grammar = document.getElementById("gramatica").value;
     grammar = grammar.replace(/ /g, "");
     var aux = grammar.split("\n");
-    //console.log(grammar);
-    //console.log(aux);
     
     for (var i in aux){
       var two = aux[i].split("->");
@@ -942,12 +969,117 @@
       var two = aux[i].split("->");
       cfg.add_prod(two[0], two[1]);
     }
+
+    // armanenamento description e grammar
+    // var errorCB;
+    // var description = this.descricao.value;
+    // db.transaction(function (tx) {
+    //   tx.executeSql(
+    //     'INSERT INTO locations (description, grammar) VALUES (?,?)',
+    //     [description, grammar],
+    //     function(tx, results) { alert('ID Retornado: ' + results.insertId); },
+    //     errorCB
+    //   );
+    // });
+
+    // this.gramaticass.innerHTML += '<option value="'+description+'">'+description+'</option>';
+    
   }
   
   //cfg.remove_eps_productions();
   //cfg.remove_simple_productions();
   //cfg.remove_infertiles_symbols();
   //cfg.remove_unreachable_symbols();
+
+  window.analize = function(){
+    console.log("Analization");
+
+    var sentence = this.sentence.value;
+    var analize = sentence.split("");
+    analize.push("$");
+    // depois tirar isso e deixar o botao desabilitado ate que o usuario clique em criar ll1
+    this.main();
+    cfg.ll1();
+    var stack = ["$"];
+    stack.push(cfg.start);
+    var productions = [];
+
+
+    var counter = 0;
+    while(true){
+      console.log("iteracao: "+counter);
+
+      //console.log(cfg.ll1_result);
+      var top_of_stack = stack[stack.length-1];
+      var simbolo = analize[0];
+
+      if (top_of_stack === top_of_stack.toUpperCase() 
+                && top_of_stack !== "+"
+                && top_of_stack !== "*"
+                && top_of_stack !== "("
+                && top_of_stack !== ")" 
+                && top_of_stack !== "&"
+                ){
+        console.log("problemas");
+        console.log(top_of_stack);
+        console.log(simbolo);
+        console.log(cfg.ll1_result[top_of_stack][simbolo]);
+        var prod_number = cfg.ll1_result[top_of_stack][simbolo];
+        if (prod_number === "-"){
+          console.log(cfg.ll1_result[top_of_stack]);
+          var array = [];
+          for (var i in cfg.ll1_result[top_of_stack]){
+            if (cfg.ll1_result[top_of_stack][i] !== "-"){
+              array.push(i);
+            }
+          }
+          console.log("Esperava-se: "+array);
+          break;
+        }
+        productions.push(prod_number);
+        console.log(cfg.numbered_prod[top_of_stack]);
+        console.log("producoes numeradas");
+        var prods = cfg.numbered_prod[top_of_stack];
+        console.log(prods);
+        var prod;
+
+        for (var i in prods){
+          if (prods[i][0] == prod_number){
+            prod = prods[i][1];
+          }
+        }
+        if (prod === "&"){
+          console.log("Epsilon!!!!");
+          stack.pop();
+        }
+        else {
+          console.log("producao escolhida: "+prod);
+          var prod_explode = prod.split("").reverse();
+          stack.pop();
+          for (var i in prod_explode){
+            stack.push(prod_explode[i]);
+          }
+        }
+      } else if (top_of_stack === top_of_stack.toLowerCase()) {
+        console.log("opa meu primeiro id");
+        stack.pop();
+        analize = analize.join("").substring(1).split("");
+      }
+
+      console.log("pilha")
+      console.log(stack);
+      if(stack.toString() === "$" && analize.toString() === "$"){
+        console.log("Sentenca Aceita!")
+        this.result_sentence.innerHTML = "Sentenca Aceita!";
+        break;
+      }
+      counter++
+    }
+    console.log("Pilha: "+stack);
+    console.log("Entrada: "+analize);
+    console.log("parse: "+productions);
+
+  }
   
   window.first = function(){
   
