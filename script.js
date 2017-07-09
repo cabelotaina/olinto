@@ -1055,14 +1055,13 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.elivre.innerHTML = grammar;
+    this.elivre.innerHTML = "<h3>Gramatica Sem Epsilon Producoes</h3>"+grammar;
   }
 
   //cfg.remove_simple_productions();
 
   window.remove_simple_productions = function(){
     this.main();
-    cfg.remove_eps_productions();
     cfg.remove_simple_productions();
 
     console.log(cfg.prod);
@@ -1070,12 +1069,53 @@
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
     }
-    this.sem_ciclos.innerHTML = grammar;
+    this.sem_ciclos.innerHTML = "<h3>Gramatica Sem Ciclos</h3>"+grammar;
   }
 
   //cfg.remove_infertiles_symbols();
-  //cfg.remove_unreachable_symbols();
+  window.remove_infertiles_symbols = function(){
+    this.main();
+    cfg.remove_infertiles_symbols();
 
+    console.log(cfg.prod);
+    var grammar = "";
+    for (var i in cfg.prod){
+      grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
+    }
+    this.ferteis.innerHTML = "<h3>Gramatica Ferteis</h3>"+grammar;
+  }
+
+  //cfg.remove_unreachable_symbols();
+  window.remove_unreachable_symbols = function(){
+    this.main();
+    cfg.remove_unreachable_symbols();
+
+    console.log(cfg.prod);
+    var grammar = "";
+    for (var i in cfg.prod){
+      grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
+    }
+    this.alcancaveis.innerHTML = "<h3>Gramatica Alcancaveis</h3>"+grammar;
+  }
+
+  // tranformar em propria
+
+  window.all_actions = function(){
+    this.main();
+    cfg.remove_eps_productions();
+    cfg.remove_simple_productions();
+    cfg.remove_infertiles_symbols();
+    cfg.remove_unreachable_symbols();
+
+    console.log(cfg.prod);
+    var grammar = "";
+    for (var i in cfg.prod){
+      grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
+    }
+    this.propria.innerHTML = "<h3>Gramatica Propria</h3>"+grammar;
+  }
+
+  // sentence analizer
   window.analize = function(){
     console.log("Analization");
     this.main();

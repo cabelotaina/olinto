@@ -62,6 +62,21 @@ F -> ( E ) | id</textarea>
       </button>
     </div>
     <div>
+      <button onclick="remove_infertiles_symbols()">
+        Remover simbolos Inferteis
+      </button>
+    </div>
+    <div>
+      <button onclick="remove_unreachable_symbols()">
+        Remover Simbolos Inalcancaveis
+      </button>
+    </div>
+    <div>
+      <button onclick="all_actions()">
+        Tranformar em Propria
+      </button>
+    </div>
+    <div>
       <button>
         <<
       </button>
@@ -82,9 +97,10 @@ F -> ( E ) | id</textarea>
     </h3>
     <p id="elivre"></p>
     <p id="sem_ciclos"></p>
-    <p id="fertil"></p>
+    <p id="ferteis"></p>
     <p id="alcancaveis"></p>
     <p id="sem_simbolos_inuteis"></p>
+    <p id="propria"></p>
     <p id="first"></p>
     <p id="follow"></p>
     <p id="firstNT"></p>
