@@ -1,9 +1,16 @@
 TODO
 
-mostrar as GLC propria e testar
+mostrar as GLC propria
+
 editar GLC’s (salvar no banco, adicionar na lista, carregar todas as que estao no banco, permitir selecionar e jogar na caixa de edicao, permitir salvar uma transformada ou jogar na caixa de selecao)
+
+
 integrar com a interface
-remover o ultimo objeto criado e criar um novo
 colocar as producoes usadas junto do parse
 
 desfazer trocas de letras gregas minusculas e maiusculas (isso deve ser transparente ao usuario)
+
+presico desfazer a transformacao de S' para Ω
+remover todos os comentarios e documentar
+testar as conversoes de GLC (remover eps, ciclos e simbolos inuteis)
+testar copiar e colar do pdf

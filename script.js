@@ -26,18 +26,23 @@
           for(var s in this.prod[p]){
             var analize = this.prod[p][s];
             var pieces = analize.split("");
-            if (analize === "&" && ne.indexOf(p) === -1)
+            if (analize === "&" && ne.indexOf(p) === -1){
               ne.push(p);
-            var ok = false;
-            for (var m in pieces){
-              if(ne.indexOf(pieces[m]) !== -1){
-                ok = true;
-              } else {
-                ok = false;
+            } 
+            else {
+              var count = 0;
+              for (var m in pieces){
+                if(ne.indexOf(pieces[m]) !== -1 && pieces[m] === pieces[m].toUpperCase()){
+                  count++
+                }
               }
-            }
-            if(ok && ne.indexOf(p) === -1){
-              ne.push(p);
+              // console.log(count);
+              // console.log(pieces.length);
+              // console.log(analize);
+              if(count === analize.length && ne.indexOf(p) === -1){
+                ne.push(p);
+              }
+              console.log("Status cjt NE: "+ne);
             }
             // while(true) pare quando ne nao tiver novas alteracoes
           }
@@ -48,7 +53,7 @@
           this.ne = ne;
         }
       }
-
+      console.log("NT com & producoes");
       console.log(this.ne);
 
       // Construa P' 
@@ -95,8 +100,14 @@
 
       if (this.ne.indexOf(this.start) != -1){
         //greek_upper["\u03A9"] = null;//Ω
-        this.start = "Ω";
-        this.prod["Ω"] = [this.start,"&"];
+        var prod = {};
+        prod["\u03A9"] = [this.start,"&"];
+        this.start = "\u03A9";
+        for (var i in this.prod){
+          prod[i] = this.prod[i];
+        }
+        this.prod = prod;
+
       }
       console.log("eliminacao de epsilon transicoes")
       console.log(this.prod);
@@ -110,17 +121,17 @@
      for (var i in [1,2,3]){
        var nx = {};
        for (var p in this.prod){
-         if(!nx[p] && p != "Ω")
+         if(!nx[p] && p != "\u03A9")
            nx[p] = [p];
 
          for (var s in this.prod[p]){
-           if (this.prod[p][s].length === 1 && p != "Ω"
+           if (this.prod[p][s].length === 1 && p != "\u03A9"
                && this.prod[p][s] == this.prod[p][s].toUpperCase()){
                nx[p].push(this.prod[p][s]);
            }
          }
 
-         if (p != "Ω"){
+         if (p != "\u03A9"){
            for (var i in nx[p]){
              if (nx[p][i] !== p && nx[p][i] !== undefined){
                 //console.log("Quem esta sendo avaliado: "+p);
@@ -160,7 +171,7 @@
             //console.log(this.prod[p].indexOf(n))
             var index = this.prod[p].indexOf(n);
             //console.log(index)
-            if (index !== -1 && p !== "S'"){
+            if (index !== -1 && p !== "\u03A9"){
               this.prod[p].splice(index, 1);
             }
           }
@@ -1040,6 +1051,11 @@
     cfg.remove_eps_productions();
 
     console.log(cfg.prod);
+    var grammar = "";
+    for (var i in cfg.prod){
+      grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
+    }
+    this.elivre.innerHTML = grammar;
   }
 
   //cfg.remove_simple_productions();
