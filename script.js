@@ -1237,6 +1237,8 @@
           }
           console.log("Esperava-se: "+array);
           this.result_sentence.innerHTML = "Esperava-se: "+array;
+          this.ll1_no.style.display = "";
+          this.ll1_yes.style.display = "none";
           break;
         }
         productions.push(prod_number);
@@ -1273,7 +1275,9 @@
       console.log(stack);
       if(stack.toString() === "$" && analize.toString() === "$"){
         console.log("Sentenca Aceita!")
-        this.result_sentence.innerHTML = "Sentenca Aceita! Parse: "+productions;
+        this.result_sentence.innerHTML = "Parse: "+productions;
+        this.ll1_yes.style.display = "";
+        this.ll1_no.style.display = "none";
         break;
       }
       counter++

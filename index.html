@@ -89,17 +89,16 @@
           <input type="text" class="search-query" 
           id="sentence"
           placeholder=" Insira uma sentenca">
-          <button type="submit" onclick="analize() 
-          class="btn-success">Analizar</button>
+          <button type="submit" onclick="analize()" class="btn-success">Analizar</button>
           <h3 id="result_sentence"></h3>
           </div>
           <!--precisa retirar isso que esta acima e trocar pelo que esta abaixo-->
-          <div class="col-md-1 footer-branding">
+          <div id="ll1_yes" style="display:none" class="col-md-1 footer-branding">
             <div class="alert alert-success" role="alert">
               <strong>Aceita</strong>
             </div>
           </div>
-          <div class="col-md-1 footer-branding">
+          <div id="ll1_no" style="display:none" class="col-md-1 footer-branding">
             <div class="alert alert-danger" role="alert">
               <strong>Rejeita</strong>
             </div>
