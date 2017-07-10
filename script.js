@@ -1,14 +1,31 @@
   class CFG {
+
+    /*
+      Construtor da Gramatica livre de contexto
+      define o simbolo inicial como null
+      cria um objeto vazio para as producoes
+      e
+      cria um array para o conjunto de terminar com epsilon (Ne);
+      
+    */
     constructor() {
       this.start = null;
       this.prod = {};
-      this.ne = Array();
+      this.ne = [];
     }
 
+    /*
+      Permite definir o simbolo inicial da gramatica
+      parametro: string simbolo incial = start
+    */
     set_start_symbol(start) {
       this.start = start;
     }
 
+    /*
+      Permite adicionar producoes a gramatica
+      parametros: lhs = NT a direita, rhs = producoes
+    */
     add_prod(lhs, rhs) {
       var prods = rhs.replace(/ /g,"").split('|');
       this.prod[lhs] = [];
@@ -17,6 +34,11 @@
       } 
     }
 
+    /*
+      Permite remover as epsilon producoes da gramatica
+      Basicamente seguinte o algoritmo apresentado na apostila
+
+    */
     remove_eps_productions() {
 
       // 1) Construa o conjunto Ne
@@ -36,15 +58,11 @@
                   count++
                 }
               }
-              // console.log(count);
-              // console.log(pieces.length);
-              // console.log(analize);
               if(count === analize.length && ne.indexOf(p) === -1){
                 ne.push(p);
               }
-              console.log("Status cjt NE: "+ne);
             }
-            // while(true) pare quando ne nao tiver novas alteracoes
+            // while(true) construa Ne pare quando Ne for estavel (sem alteracoes)
           }
         }
         if (this.ne === ne){
@@ -53,10 +71,8 @@
           this.ne = ne;
         }
       }
-      console.log("NT com & producoes");
-      console.log(this.ne);
 
-      // Construa P' 
+      // Construa P' (novo conjunto de producoes)
       // a) {inclua em P' todas as producoes de P com excessao daquelas da forma A -> &}
 
       this.prod_new = this.prod;
@@ -72,20 +88,13 @@
       // inclua en P' a producao A -> aX
 
       for (var p in this.prod_new){
-        //console.log("Quem sou eu: "+p)
         for (var fs in this.prod[p]){
           for (var n in ne){
-            console.log(ne[n]);
-            console.log(this.prod[p][fs]);
             var array2 = this.prod[p][fs].split("");
-            console.log(array2);
             var array = this.prod[p][fs].split("");
-            //console.log(array);
 
               var index = array.indexOf(ne[n]);
-              //console.log(index);
               if (index !== -1 && array.length > 0){ // evita remover quando existe apenas 1 simbolo
-                console.log(array);
                 array.splice(index, 1);
                 this.prod[p].push(array.join(""))
               }
@@ -99,7 +108,7 @@
       // Se S pertence a Ne colocar a producao S' -> S | &
 
       if (this.ne.indexOf(this.start) != -1){
-        //greek_upper["\u03A9"] = null;//Ω
+        //usa o simbolo Ω -> ["\u03A9"] como novo simbolo inicial para evitar usar S' (mais complexo para analisar)
         var prod = {};
         prod["\u03A9"] = [this.start,"&"];
         this.start = "\u03A9";
@@ -107,23 +116,21 @@
           prod[i] = this.prod[i];
         }
         this.prod = prod;
-
       }
-      console.log("eliminacao de epsilon transicoes")
-      console.log(this.prod);
-
     }
 
+    /*
+      Remove as producoes simples (ciclos) da grammatica
+      Basicamente implementa o algoritmo apresentado na apostila;\
+    */
     remove_simple_productions(){
     // 1) construir o cjt NA
      this.nx = {};
-     //while(true){
-     for (var i in [1,2,3]){
+     while(true){
        var nx = {};
        for (var p in this.prod){
          if(!nx[p] && p != "\u03A9")
            nx[p] = [p];
-
          for (var s in this.prod[p]){
            if (this.prod[p][s].length === 1 && p != "\u03A9"
                && this.prod[p][s] == this.prod[p][s].toUpperCase()){
@@ -134,12 +141,7 @@
          if (p != "\u03A9"){
            for (var i in nx[p]){
              if (nx[p][i] !== p && nx[p][i] !== undefined){
-                //console.log("Quem esta sendo avaliado: "+p);
-                //console.log("conjunto em avaliacao: "+nx[p]);
-                //console.log("Item sendo avaliado:"+nx[p][i]);
                 if (nx[nx[p][i]] !== undefined){
-                  //console.log("cjt que deve ser copiado: "+nx[nx[p][i]]);
-                  //console.log(nx[nx[p][i]] !== undefined);
                   for (var k in nx[nx[p][i]]){
                     if (nx[p].indexOf(nx[nx[p][i]][k]) === -1){
                       nx[p].push(nx[nx[p][i]][k]);
@@ -150,54 +152,35 @@
            }
          }
        }
-
-       if (this.nx == nx){
+       if (JSON.stringify(this.nx) == JSON.stringify(nx)){
          break;
-       } else {
+       } 
+       else {
          this.nx = nx;
        }
       }
-      console.log("eliminacao de producao simples")
-      console.log(this.nx);
 
       // construir P'
 
       for (var p in this.prod){
         for (var fs in this.prod[p]){
           for (var n in this.nx){
-            //console.log(p);
-            //console.log(n)
-            //console.log(this.prod[p])
-            //console.log(this.prod[p].indexOf(n))
             var index = this.prod[p].indexOf(n);
-            //console.log(index)
             if (index !== -1 && p !== "\u03A9"){
               this.prod[p].splice(index, 1);
             }
           }
         }
       }
-      console.log("P'")
-      console.log(this.prod)
 
       // Copiar producoes dos terminais em NA
 
       for (var p in this.prod){
         if (p !== "Ω"){
-          //console.log(this.prod[p])
-          //console.log(nx[p])
-          //console.log(this.nx[p])
           for (var l in this.nx[p]){
-            //console.log("Quem esta sendo avaliado: "+p)
-
             if (p !== this.nx[p][l]){
               for (var m in this.prod[this.nx[p][l]]){
-                //console.log(this.prod[this.nx[p][l]][m])
-                //console.log(this.prod[p].indexOf(this.prod[this.nx[p][l]][m]))
-                //console.log(this.prod[this.nx[p][l]][m])
                 if (this.prod[p].indexOf(this.prod[this.nx[p][l]][m]) === -1){
-                  //console.log("pode pah!");
-                  //console.log(this.prod[p])
                   this.prod[p].push(this.prod[this.nx[p][l]][m]);
                 }
               }
@@ -205,15 +188,12 @@
           }
         }   
       }
-
-      console.log("P' completo")
-      console.log(this.prod)
-
     }
-
+    /*
+      Remove os simbolos imferteis
+      Aplica o algoritmo visto na apostila;
+    */
     remove_infertiles_symbols(){
-      console.log("De violeta!");
-
       var x = 0;
       var n = {};
 
@@ -241,41 +221,26 @@
                   break;
                 }
               }
-
-              //console.log(explode[k])
-              //console.log(status)
-
             }
             if (status && n[x].indexOf(i) === -1){
               n[x].push(i);
             }
           }
         }
-        // imprime todos os conjuntos a cda iteracao
-        //console.log(n);
+        // imprime todos os conjuntos a cada iteracao
         if ( x !== 0){
-          //console.log(n[x]);
-          //console.log(n[x-1]);
           if (n[x].toString() === n[x-1].toString()){
-            //console.log("eh igual!");
             break;
           }
         }
         x++;
       }
       this.nf = n[x-1];
-      // imprime o conjuntos dos nao terminais ferteis
-      //console.log(this.nf);
-      //console.log(this.nf);
-      //console.log(this.nf.indexOf("B"))
       for (var p in this.prod){
-        //console.log(this.prod[p]);
         for ( var fs in this.prod[p]){
-          //console.log(this.prod[p][fs]);
           var explode = this.prod[p][fs].split("");
           var status = false;
           for (var s in explode){
-            //console.log(explode[s]);
             if (explode[s] === explode[s].toLowerCase()){
               status = false;
             }
@@ -287,22 +252,18 @@
               break;
             }
           }
-          //console.log(status);
           if (status){
-            //console.log("Quem vai sair: "+this.prod[p][fs]);
-            //console.log(fs)
-            //console.log(status)
             this.prod[p].splice(fs, 1);
           }
         }
       }
-      console.log(this.prod)
-
     }
 
+    /*
+      Remove os simbolos inalcancaveis da Gramatica
+      Aplicado como visto na Apostila
+    */
     remove_unreachable_symbols(){
-      console.log("Mathita Pereira!");
-
       var x = 0;
       var v = {};
       while(true){
@@ -312,33 +273,19 @@
         else {
           v[x] = v[x-1];
         }
-        //console.log(x)
-        //console.log(v[x])
         for (var i in v[x]){
-
-          //console.log(this.prod[v[x][i]]);
           for (var j in this.prod[v[x][i]]){
-            //console.log(this.prod[v[x][i]][j])
             var explode = this.prod[v[x][i]][j].split("");
             for(var k in explode){
-              //if (explode[k] == explode[k].toUpperCase() && v[x].indexOf(explode[k]) === -1){
               if (v[x].indexOf(explode[k]) === -1){
-                //console.log(explode[k]);
                 v[x].push(explode[k]);
               }
             }
           }
         }
-        //console.log(v);
         this.vf = v[x];
-        // imprime o conjunto dos terminais alcancaveis
-
         if ( x !== 0){
-          //console.log(n[x]);
-          //console.log(n[x-1]);
           if (v[x].toString() === v[x-1].toString()){
-            //console.log(this.vf)
-            //console.log("eh igual!");
             break;
           }
         }
@@ -346,14 +293,16 @@
       }
 
       for (var p in this.prod){
-        //console.log(p);
         if (this.vf.indexOf(p) === -1 ){
           delete this.prod[p];
         }
       }
-      console.log(this.prod);
     }
-
+    /*
+      Metodo que obtem o first da gramatica
+      basicamente itera sobre a gramatica multiplas vezes obtendo os firsts
+      terminais e depois o firts dependentes de outros nao terminais
+    */
     first(){
 
       var prod_new = {};
@@ -372,10 +321,8 @@
         }
       }
 
-      console.log("first");
       var x = 0;
       while(true){
-        //console.log("Iteration: "+x);
         // 1) Se X pertence a Vt entao first(x) = {X}
         for (var i in prod_new){
           for(var j in prod_new[i]){
@@ -417,11 +364,9 @@
         }
 
         if (JSON.stringify(criterio) == JSON.stringify(prod_new) ){
-          //console.log("ja eh igual pode parar: "+x);
           break;
         }
         else {
-          //console.log("diferente "+x);
           for (var i in prod_new){
             criterio[i] = [];
             for (var j in prod_new[i]){
@@ -441,8 +386,6 @@
         }
       }
 
-      //console.log("remover as formas sentenciais e deixar apenas vt U &")
-
       // remove todas as formas sentenciais
       this.first_result = {};
       for (var l in aux){
@@ -453,16 +396,15 @@
           }
         }
       }
-
-      console.log(this.first_result);
-      //console.log(criterio);
-      //console.log(this.prod);
     }
 
+    /*
+      Obtem os follow da Gramatica
+      De maneira similar aos outros algoritmos implementados
+      passa uma certa quantidade de vezes por cada producao 
+      com o foco de completar o conjunto dos follows
+    */
     follow(){
-
-      console.log("follow me os bons!");
-
       if (!this.first_result){
         this.first();
       }
@@ -476,7 +418,6 @@
 
       for (var i in this.prod){
         for (var j in this.prod[i]){
-          //console.log("Producao em Analise: "+this.prod[i][j]);
           var explode = this.prod[i][j].split("");
           for (var k = 0; k < explode.length;k++){
             if (explode[k] === explode[k].toUpperCase()
@@ -488,8 +429,6 @@
                 && explode[l] !== "-"
                 && explode[l] !== "/"
                 && k < explode.length -1){
-              //console.log("indice: "+k);
-              //console.log("NT en analise: "+explode[k+1]);
               for (var l = k+1; l <= explode.length -1; l++){
                 // Encontramos um Vn
                 if (explode[l] === explode[l].toUpperCase() 
@@ -500,18 +439,10 @@
                      && explode[l] !== "-"
                      && explode[l] !== "/"
                      && explode[l] !== "&"){
-                  // first do proximo que vamos pegar
-                  //console.log("NT Atual:"+explode[k])
-                  //console.log("NT em analise: "+explode[l]);
-                  //console.log("First deste NT: "+this.first_result[explode[l]]);
+                  // first do proximo
                   var frt = this.first_result[explode[l]];
                   var epsilon = false;
                   for (var m in frt){
-                    console.log("Problemas");
-                    console.log(explode[k]);
-                    console.log(aux[explode[k]]);
-                    console.log(aux);
-                    console.log(frt[m]);
                     if (aux[explode[k]].indexOf(frt[m]) === -1 && frt[m] !== "&"){
                       aux[explode[k]].push(frt[m]);
                     }
@@ -546,17 +477,13 @@
       for (var i in this.prod){
         for ( var j in this.prod[i]){
           var explode = this.prod[i][j].split("");
-          // tenho que fazer um while aqui.
           for (var k = explode.length -1; k >=0 ;k--){
             var flw = aux[i]; // pegando o follow do simbolo em analise
-            //console.log(this.prod[i][j])
-            //console.log("follow "+i+" no follow "+explode[k]);
             if(explode[k] === explode[k].toLowerCase()){
               break;
             }
             if (explode[k] === explode[k].toUpperCase() && explode[k] !== "&"){
               for (var l in flw){
-                //console.log(flw[l]);
                 if (k < explode.length -1){
                   if (aux[explode[k]].indexOf(flw[l]) === -1 && flw[l] === flw[l].toUpperCase()
                         && this.first_result[explode[k+1]].indexOf("&") !== -1){
@@ -574,16 +501,17 @@
           }
         }
       }
-      console.log(aux);
       this.follow_result = aux;
     }
 
+    /*
+      Este metodo basicamente utiliza o first para criar um novo conjunto
+      dos NT's que sao first dos lados direitos de alguma gramatica
+    */
     first_nt(){
       if (!this.first_result){
         this.first();
       }
-      console.log("first_nt");
-
       var aux = {};
       for (var i in this.prod){
         aux[i] = [];
@@ -609,12 +537,15 @@
           }
         }
       }
-      console.log(aux);
       this.first_nt_result = aux;
     }
-    
+
+    /*
+      Metodo que testa se uma gramatica livre de contexto esta fatorada
+      basicamente ele realiza a intersecao entre os firts(alpha) do lado
+      esquerdo da gramatica.
+    */
     is_factored(){
-      console.log("is_factored");
       var aux = {};
       for (var i in this.prod){
         aux[i] = [];
@@ -628,13 +559,11 @@
         for (var j in this.prod[i]){
           var explode = this.prod[i][j].split("");
           for (var k in explode){
-            //console.log(explode[k]);
             if (explode[k] === explode[k].toLowerCase()){
               aux[i].push(explode[k]);
               break;
             }
             if (explode[k]  === explode[k].toUpperCase() && explode[k] !== "&"){
-              //console.log(this.first_result[explode[k]]);
               var epsilon = false;
               for (var l in this.first_result[explode[k]]){
                 if (this.first_result[explode[k]][l] === "&"){
@@ -652,7 +581,6 @@
         }
       }
       
-      console.log(aux);
       var status;
       for (var i in aux){
         for (var j in aux[i]){
@@ -672,27 +600,24 @@
       return status;
     }
     
-    
+    /*
+      Metodo que checa se uma gramatica possui recursao a esquerda
+      direta ou indireta utilizando o first da gramatica
+    */
     left_recursion(){
-      console.log("left_recursion");
       if (!this.first_nt_result){
         this.first_nt();
       }
       
-      //console.log(this.first_nt_result);
       var status;
       for (var i in this.first_nt_result){
-        //console.log(this.first_nt_result[i].toString());
         for (var j in this.first_nt_result[i]){
-          //console.log(this.first_nt_result[i][j].toString());
           if (i.toString() === this.first_nt_result[i][j].toString()){
             status = true;
           }
         }
       }
-      
-      console.log(this.first_nt_result);
-      
+            
       if (status){
         this.left_rec = "SIM";
       }
@@ -704,9 +629,13 @@
       return status;
       
     }
-    
+
+    /*
+      Este metodo analisa se a gramatica nao possui recursao a esquerda, ciclos, 
+      e para as producoes que levam a epsilo em zero ou mais passos
+      a intersecao do first e follow e igual a vazio
+    */
     ll1(){
-      console.log("LL(1)");
       this.numbered_prod = "";
       
       if (!this.first_result){
@@ -716,8 +645,6 @@
       if (!this.follow_result){
         this.follow();
       }
-      //console.log(this.follow_result);
-      //console.log(this.first_result);
       
       var header = [];
       for (var i in this.first_result){
@@ -737,12 +664,9 @@
           }
         }
       }
-      //console.log(header);
       this.alphabet = header;
       
       var ll1 = {};
-      //this.alphabet = this.alphabet;
-      //this.alphabet.push("$");
       
       for (var i in this.prod){
         ll1[i] = {};
@@ -750,9 +674,6 @@
           ll1[i][this.alphabet[j]]= "-";
         }
       }
-
-      console.log("Tabela LL(1) Vazia");
-      console.log(ll1);
       
       var numbered_prod = {};
       for (var i in  this.prod){
@@ -762,36 +683,26 @@
       var counter = 1;
       for (var i in this.prod){
         for (var j in this.prod[i]){
-          // console.log(counter+": "+this.prod[i][j]);
-          // index = simbolo, posicao 0 = numero da producao e posicao 1 = producao
+          // index = simbolo, posicao 0 = numero da producao 
+          // e posicao 1 = producao
           numbered_prod[i].push([counter , this.prod[i][j]]);
           counter++;
         }
       }
       
       this.numbered_prod = numbered_prod;
-      // console.log("producoes numeradas");
-      // console.log(this.numbered_prod);
       
       for (var i in this.numbered_prod){
-        // console.log("producao");
-        // console.log(i);
         for (var l in this.numbered_prod[i]){
           var explode = this.numbered_prod[i][l][1].split("");
-          // console.log("alpha");
-          // console.log(explode);
-          // console.log(this.numbered_prod[i][l][1]);
           var first_resumem = [];
           for (var j in explode){
             if(explode[j] === explode[j].toLowerCase() &&
                 explode[j] !== "&"){
-              //console.log([explode[j]]);
               first_resumem.push(explode[j]);
               break;
             } else if (explode[j] === explode[j].toUpperCase() &&
                 explode[j] !== "&"){
-              //console.log(explode[j]);
-              //console.log(this.first_result[explode[j]]);
               var aux = this.first_result[explode[j]];
               for (var k in aux){
                 first_resumem.push(aux[k]);
@@ -801,13 +712,7 @@
               }
             }
             else if (explode[j] === "&"){
-              console.log("analise");
-              console.log(explode[j]);
-              console.log(this.numbered_prod[i][j]);
               first_resumem.push("&");
-              console.log("first_resumem")
-              console.log(first_resumem);
-              //this.numbered_prod[i][j].push(["&"]);
               break;
             }
           }
@@ -815,11 +720,6 @@
         }
         
       }
-      
-      // producoes numeradas e com seus respectivos first's
-      //console.log("Producoes numeradas");
-      //console.log(this.numbered_prod);
-      //console.log(ll1);
       
       for (var i in ll1){
 
@@ -833,14 +733,10 @@
           }
 
           for (var j in this.alphabet){
-            console.log("producoes do simbolo: ");
-            console.log(i);
             if (i !== "#"){
-              console.log(this.numbered_prod[i][l]);
             }
             if (i !== "#"){
               if (first_alpha.indexOf(this.alphabet[j]) !== -1){
-                // fazer if para o caso de de ja existir um numero no local colocando uma virgula entre eles
                 ll1[i][this.alphabet[j]] = number_prod;
               }
               else{
@@ -853,16 +749,11 @@
 
         }
 
-
         if (i !== "#"){
             if (this.first_result[i].indexOf("&")  !== -1){
-              //console.log("NT: "+i);
-              //console.log("First: "+this.first_result[i])
-              //console.log("Follow: "+this.follow_result[i]);
               
               for (var j in this.alphabet){
                   if (this.follow_result[i].indexOf(this.alphabet[j]) !== -1){
-                    // fazer if para o caso de ja existir um numero no local
                     ll1[i][this.alphabet[j]] = number_prod;
                   }
                   else {
@@ -886,7 +777,9 @@
       this.ll1_result = ll1;
       
     }
-    
+    /*
+      Metodo que faz a intersecao do first e do follow
+    */
     ff_intersection(){
       if (!this.first_result){
         this.first();
@@ -898,7 +791,6 @@
 
       var status = false;
       for (var i in this.first_result){
-        console.log(this.first_result[i]);
         if (this.first_result[i].indexOf("&") !== -1){
           for (var j in this.follow_result[i]){
             if (this.first_result[i].indexOf(this.follow_result[j]) !== -1){
@@ -908,34 +800,28 @@
           }
         }
       }
-      if(status){
-        console.log("intersecao...");
-      } else {
-        console.log("Obaaaa!");
-      }
       this.ff_intersection_result = status;
       return status;
     }
 
   }
 
+  // criacao da gramatica regular
   var cfg = new CFG();
-
+  // criacao do banco de dados
   var db = openDatabase('olinto', '1.0', 'CFG db', 2 * 1024 * 1024);
-
+  // alerta se o banco de dados nao foi criado
   if(!db){
     alert("Problemas ao criar o banco de dados");
   }
-  
-  // criando a tabela base do sistema
+  // criacao da tabela base do sistema
   db.transaction(function (tx) {
     tx.executeSql('CREATE TABLE IF NOT EXISTS grammar (id INTEGER PRIMARY KEY ASC, description VARCHAR(255) NOT NULL, grammar VARCHAR(255) NOT NULL)');
   });
 
-  // Query out the data
+  // Query inicial do sistema
   db.transaction(function (tx) {
     tx.executeSql('SELECT * FROM grammar', [], function (tx, results) {
-      console.log(results);
       var len = results.rows.length, i;
       for (i = 0; i < len; i++) {
         this.gramaticas.innerHTML += '<option value="'+results.rows[i].id+'">'+results.rows[i].description+'</option>';
@@ -943,7 +829,9 @@
     });
   });
 
-
+  // conjunto de letras gregas substitutivas para nao terminais
+  // e terminar com tamanho maior um, bem como fucao que obtem 
+  // o proximo simbolo
   var greek_upper = {};
   greek_upper["\u0393"] = null;//Γ
   greek_upper["\u0394"] = null;//Δ
@@ -971,7 +859,6 @@
     }
   }
 
-
   var greek_lower = {};
   greek_lower["\u03B9"] = null; //ι
   greek_lower["\u03BA"] = null; //κ
@@ -992,7 +879,6 @@
   greek_lower["\u03C8"] = null; //ψ
   greek_lower["\u03C9"] = null; //ω
   
-
   var next_greek_lower = function(){
     for (var i in greek_lower){
       if (!greek_lower[i]){
@@ -1001,23 +887,22 @@
     }
   }
 
+  // conjunto de metodos ligados a visao do sistema
+
+  // Metodo que analisa uma palavra
   window.analize_grammar = function(){
 
     var e = this.gramaticas;
     var id = e.options[e.selectedIndex];
     if (id){
-      //console.log(id.value);
 
       id = id.value;
-      //Query out the data
       db.transaction(function (tx) {
         tx.executeSql('SELECT * FROM grammar where id='+id, [], function (tx, results) {
-          console.log(results);
           var len = results.rows.length, i;
           for (i = 0; i < len; i++) {
             this.gramatica.innerHTML = results.rows[i].grammar;
             this.descricao.value = results.rows[i].description;
-            console.log(results.rows[i].description);
           }
         });
       });
@@ -1025,7 +910,8 @@
     }
     
   }
-
+  
+  // metodo que remove uma gramatica da visao e do banco de dados
   window.remove_grammar = function(){
 
       var id = document.getElementById("gramaticas");
@@ -1041,6 +927,7 @@
     }
   }
 
+  // metodo que reinicia o objeto que contem a gramatica
   refresh = function(){
     if (cfg){
       delete cfg;
@@ -1057,34 +944,32 @@
     }
   }
 
-  window.main = function(){
+  //metodo principal ultizado ao adicionar uma nova gramatica
+  window.main = function(existe = false){
     refresh();
-
     var grammar = document.getElementById("gramatica").value;
     grammar = grammar.replace(/ /g, "");
-
-
-    // armanenamento description e grammar
-    var errorCB;
-    var description = this.descricao.value;
-    db.transaction(function (tx) {
-      tx.executeSql(
-        'INSERT INTO grammar (description, grammar) VALUES (?,?)',
-        [description, grammar],
-        function(tx, results) { this.gramaticas.innerHTML += '<option value="'+results.insertId+'">'+description+'</option>'; },
-        errorCB
-      );
-    });
+    //armanezenamento de uma gramatica no banco de dados
+    if (!existe){
+      var errorCB;
+      var description = this.descricao.value;
+      db.transaction(function (tx) {
+        tx.executeSql(
+          'INSERT INTO grammar (description, grammar) VALUES (?,?)',
+          [description, grammar],
+          function(tx, results) { this.gramaticas.innerHTML += '<option value="'+results.insertId+'">'+description+'</option>'; },
+          errorCB
+        );
+      });
+    }
 
     var aux2 = grammar.split("\n");
 
     for (var i in aux2){
       var two = aux2[i].split("->");
-      //console.log(two);
       var productions = two[1].split("|");
       for (var j in productions){
         if (productions[j] === productions[j].toLowerCase() && productions[j] !== "&"){
-          //console.log(productions[j]);
           var choice = next_greek_lower();
           var re = new RegExp(productions[j],"g");
           grammar = grammar.replace(re, choice);
@@ -1103,7 +988,6 @@
         greek_upper[choice] = two[0];
       }
     }
-    console.log(grammar);
     aux = grammar.split("\n");
     var explode = aux[0].split("");
     cfg.set_start_symbol(explode[0]);
@@ -1112,17 +996,12 @@
       var two = aux[i].split("->");
       cfg.add_prod(two[0], two[1]);
     }
-
-
   }
   
-  //cfg.remove_eps_productions();
-
+  // metodo de controle do processo de remocao das epsilon transicoes
   window.remove_eps_productions = function(){
-    this.main();
+    this.main(true);
     cfg.remove_eps_productions();
-
-    console.log(cfg.prod);
     var grammar = "";
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
@@ -1130,13 +1009,10 @@
     this.elivre.innerHTML = "<h3>Gramatica Sem Epsilon Producoes</h3>"+replace_greek(grammar);
   }
 
-  //cfg.remove_simple_productions();
-
+  // metodo de controle da remocao de ciclos
   window.remove_simple_productions = function(){
-    this.main();
+    this.main(true);
     cfg.remove_simple_productions();
-
-    console.log(cfg.prod);
     var grammar = "";
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
@@ -1144,12 +1020,10 @@
     this.sem_ciclos.innerHTML = "<h3>Gramatica Sem Ciclos</h3>"+replace_greek(grammar);
   }
 
-  //cfg.remove_infertiles_symbols();
+  // metodo de controle da remocao de producoes inferteis
   window.remove_infertiles_symbols = function(){
-    this.main();
+    this.main(true);
     cfg.remove_infertiles_symbols();
-
-    console.log(cfg.prod);
     var grammar = "";
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
@@ -1157,12 +1031,10 @@
     this.ferteis.innerHTML = "<h3>Gramatica Ferteis</h3>"+replace_greek(grammar);
   }
 
-  //cfg.remove_unreachable_symbols();
+  // metodo de controle da remocao de simbolos inalcancaveis
   window.remove_unreachable_symbols = function(){
-    this.main();
+    this.main(true);
     cfg.remove_unreachable_symbols();
-
-    console.log(cfg.prod);
     var grammar = "";
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
@@ -1170,16 +1042,13 @@
     this.alcancaveis.innerHTML = "<h3>Gramatica Alcancaveis</h3>"+replace_greek(grammar);
   }
 
-  // tranformar em propria
-
+  // metodo de controle da traformacao em gramatica propria
   window.all_actions = function(){
-    this.main();
+    this.main(true);
     cfg.remove_eps_productions();
     cfg.remove_simple_productions();
     cfg.remove_infertiles_symbols();
     cfg.remove_unreachable_symbols();
-
-    console.log(cfg.prod);
     var grammar = "";
     for (var i in cfg.prod){
       grammar += i + " -> " + cfg.prod[i].join(" | ") + "<br>";
@@ -1187,44 +1056,29 @@
     this.propria.innerHTML = "<h3>Gramatica Propria</h3>"+replace_greek(grammar);
   }
 
-  // sentence analizer
+  // metodo de controle da analize de sentenca
   window.analize = function(){
-    console.log("Analization");
-    this.main();
+    this.main(true);
 
-    console.log("greek_lower:");
-    console.log(this.greek_lower);
     var sentence = this.sentence.value;
     for (var j in this.greek_lower){
-      console.log(this.greek_lower[j]);
       if (this.greek_lower[j] !== null){
-        console.log("possui substring");
-        console.log(sentence.indexOf(this.greek_lower[j]) !== -1);
         if (sentence.indexOf(this.greek_lower[j]) !== -1){
-
-          console.log(j);
           var choice = j;
           var re = new RegExp(this.greek_lower[j],"g");
-          console.log(this.greek_lower[j]);
           sentence = sentence.replace(re, choice);
         }
       }
     }
-    console.log("Sentenca em analize: "+sentence);
     var analize = sentence.split("");
     analize.push("$");
-    // depois tirar isso e deixar o botao desabilitado ate que o usuario clique em criar ll1
     cfg.ll1();
     var stack = ["$"];
     stack.push(cfg.start);
     var productions = [];
 
-
     var counter = 0;
     while(true){
-      console.log("iteracao: "+counter);
-
-      //console.log(cfg.ll1_result);
       var top_of_stack = stack[stack.length-1];
       var simbolo = analize[0];
 
@@ -1235,30 +1089,21 @@
                 && top_of_stack !== ")" 
                 && top_of_stack !== "&"
                 ){
-        console.log("problemas");
-        console.log(top_of_stack);
-        console.log(simbolo);
-        console.log(cfg.ll1_result[top_of_stack][simbolo]);
         var prod_number = cfg.ll1_result[top_of_stack][simbolo];
         if (prod_number === "-"){
-          console.log(cfg.ll1_result[top_of_stack]);
           var array = [];
           for (var i in cfg.ll1_result[top_of_stack]){
             if (cfg.ll1_result[top_of_stack][i] !== "-"){
               array.push(i);
             }
           }
-          console.log("Esperava-se: "+array);
           this.result_sentence.innerHTML = "Esperava-se: "+replace_greek(array.toString());
           this.ll1_no.style.display = "";
           this.ll1_yes.style.display = "none";
           break;
         }
         productions.push(prod_number);
-        console.log(cfg.numbered_prod[top_of_stack]);
-        console.log("producoes numeradas");
         var prods = cfg.numbered_prod[top_of_stack];
-        console.log(prods);
         var prod;
 
         for (var i in prods){
@@ -1267,11 +1112,9 @@
           }
         }
         if (prod === "&"){
-          console.log("Epsilon!!!!");
           stack.pop();
         }
         else {
-          console.log("producao escolhida: "+prod);
           var prod_explode = prod.split("").reverse();
           stack.pop();
           for (var i in prod_explode){
@@ -1279,15 +1122,11 @@
           }
         }
       } else if (top_of_stack === top_of_stack.toLowerCase()) {
-        console.log("opa meu primeiro id");
         stack.pop();
         analize = analize.join("").substring(1).split("");
       }
 
-      console.log("pilha")
-      console.log(stack);
       if(stack.toString() === "$" && analize.toString() === "$"){
-        console.log("Sentenca Aceita!")
         this.result_sentence.innerHTML = "Parse: "+productions;
         this.ll1_yes.style.display = "";
         this.ll1_no.style.display = "none";
@@ -1295,26 +1134,20 @@
       }
       counter++
     }
-    console.log("Pilha: "+stack);
-    console.log("Entrada: "+analize);
-    console.log("parse: "+productions);
     this.parse = productions;
-
   }
   
+  // metodo de controle do first
   window.first = function(){
-  
     cfg.first();
     var output = "<h3>First</h3>";
     for (var i in cfg.first_result){
       output += "<p>"+i+": "+cfg.first_result[i].join()+"</p>";
-      console.log(output);
     }
-    
     this.first_html.innerHTML = replace_greek(output);
-  
   }
   
+  // metodo de controle do follow
   window.follow = function(){
   
     cfg.follow();
@@ -1327,7 +1160,7 @@
   
   }
 
-  //cfg.first_nt();
+  // metodo de controle do first NT
   window.first_nt = function(){
     cfg.first_nt();
     var output = "<h3>FirstNT</h3>";
@@ -1338,6 +1171,8 @@
     this.firstNT.innerHTML = replace_greek(output);
   }
 
+  // metodo auxiliar que converte de 
+  // letras gregas para letras do alfabeto original
   replace_greek = function(output){
     for (var i in greek_upper){
       if (this.greek_upper[i] !== null){
@@ -1360,28 +1195,24 @@
     return output;
   }
   
-  //cfg.is_factored();
+  // metodo de controle do teste de fatoracao
   window.factored = function(){
     cfg.is_factored();
     this.response.innerHTML = "<h3>G esta fatorada? "+cfg.is_factored_result+"</h3>";
   }
   
-  //cfg.left_recursion();
+  // meto de contro do teste de recursao a esquerda
   window.left_rec = function(){
     cfg.left_recursion();
     this.response.innerHTML = "<h3>G possui Rec. Esq? "+cfg.left_rec+"</h3>";
   }
-  //cfg.ll1();
+  // metodo de controle do teste para gramaticas LL(1)
   window.eh_ll1 = function(){
     this.ff_intersection_result;
     if (!cfg.is_factored()  && !cfg.left_recursion() && !cfg.ff_intersection()){
        this.response.innerHTML = "<h3>LL(1)? SIM</h3>";
        // constroi a tabela de parsing pois ela eh LL(1)
        cfg.ll1();
-       console.log(cfg.alphabet);
-       console.log(cfg.ll1_result);
-       //this.tabela.innerHTML = "Teste";
-
         var globalCounter = 0;
         var table = document.getElementById('table');
         this.title_table.innerHTML = "Tabela Parsing LL(1)";

@@ -1,9 +1,5 @@
 TODO
 
-ver por que o first, follow e follow NT tem mais <p>'s do que o normal
-remover todos os comentarios e documentar
-(// |//)?console.log\([\"?&0-9a-zA-Z._\[\]+]*\"?\);
-
 testar as conversoes de GLC (remover eps, ciclos e simbolos inuteis)
 
 analizar se todos os elementos da palavra pertencem ao alfabeto e emitir um erro caso contrario
@@ -13,3 +9,7 @@ editar GLC’s (permitir salvar uma transformada ou jogar na caixa de selecao)
 se existe uma gramatica com o mesmo nome nao colocar ela no banco
 
 trocar o exemplo pela gramatica em analise com o numero das producoes ao lado
+
+por algum motivo na linha 497 dentro do follow e eu escrevi "tenho que fazer um while aqui"
+
+ao adicionar uma nova gramatica temos que dar clear em todos os campos da tela
